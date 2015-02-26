@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>いいね！ カウンター</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<script src="/jquery-1.11.2.min.js"></script>
+	<script src="/jquery.cookie.js"></script>
+	<link href='//fonts.googleapis.com/css?family=Nixie+One' rel='stylesheet' type='text/css'>
+	<link href="/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="container">
+	<div class="counter_title">みんなのいいね！</div>
+	<div class="counter_contents_container">
+		<div id="total_like" class="counter counter_contents">0</div>
+		<div id="total_like_trans" class="counter_trans_container"></div>
+		<div class="counter">&nbsp;</div>
+	</div>
+</div>
+<div class="container">
+	<div class="counter_title">Myいいね！</div>
+	<div class="counter_contents_container">
+		<div id="my_like" class="counter counter_contents">0</div>
+		<div id="my_like_trans" class="counter_trans_container"></div>
+		<div class="counter">&nbsp;</div>
+	</div>
+</div>
+<div>
+	<div class="like_button">
+		<button id="button_like" class="like_button_face" disabled>
+			<span style="display: none;">いいね！</span>
+			<div class="loader_container">
+				<div class="loader"></div>
+			</div>
+		</button>
+	</div>
+</div>
+<script type="text/javascript" src="like_client.js"></script>
+<script type="text/javascript" src="view_manager.js?20150219"></script>
+<script type="text/javascript">
+$(window).ready(function($){
+	var likeClient = new LikeClient;
+	if (!likeClient.isSupport()) {
+		alert("ご利用のブラウザは対応していません。\n"
+			+ "Androidの場合はChromeをご利用ください。");
+		return;
+	}
+
+	var viewManager = new ViewManager($('#button_like'));
+	var updateTotalLike = new NumberAnimatedEffect($('#total_like'), $('#total_like_trans'), 1500, 600);
+	var updateMyLike = new NumberAnimatedEffect($('#my_like'), $('#my_like_trans'), 1500, 600);
+
+	likeClient.actions.status = likeClient.actions.like = function(data) {
+		updateTotalLike(data.total, 1)
+		updateMyLike(data.user, 1)
+		viewManager.enableLike();
+	};
+	likeClient.actions.total_update = function(data) {
+		updateTotalLike(data.total, 0)
+	}
+	likeClient.actions.reset = function(data) {
+		updateTotalLike(0, 1)
+		updateMyLike(0, 1)
+	}
+	likeClient.open();
+
+	$("#button_like").on('click', function() {
+		viewManager.disableLike();
+		likeClient.like();
+	});
+});
+</script>
+</body>
+</html>

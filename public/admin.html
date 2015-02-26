@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>いいね！ カウンター</title>
+	<meta name="viewport" content="width=device-width">
+	<script src="/jquery-1.11.2.min.js"></script>
+	<script src="/jquery.cookie.js"></script>
+</head>
+<body>
+<div>
+	<div class="container">
+		password <input type="password" id="button_pw" size=10>
+	</div>
+	<div class="container">
+		<button id="button_reset">全部クリア</button>
+	</div>
+</div>
+<script type="text/javascript" src="like_client.js"></script>
+<script type="text/javascript">
+$(window).ready(function($){
+	var likeClient = new LikeClient;
+	if (!likeClient.isSupport()) {
+		alert("ご利用のブラウザは対応していません。\n"
+			+ "Androidの場合はChromeをご利用ください。");
+		return;
+	}
+
+	likeClient.actions.status = likeClient.actions.like = function(data) {
+		$("#button_reset").removeAttr("disabled");
+	};
+	likeClient.open();
+	$("#button_reset").on('click', function(e) {
+		likeClient.reset($("#button_pw").val());
+	});
+});
+</script>
+</body>
+</html>

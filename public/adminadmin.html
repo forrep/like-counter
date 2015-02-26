@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>いいね！ カウンター</title>
+	<meta name="viewport" content="width=device-width">
+	<script src="/jquery-1.11.2.min.js"></script>
+	<script src="/jquery.cookie.js"></script>
+</head>
+<body>
+<div>
+	<div class="container">
+		password <input type="password" id="button_pw" size=10>
+	</div>
+	<textarea id="send_data" style="width: 40em; height: 10em;">
+{
+	"store_interval": 5000,
+	"broadcast_timeout": 500,
+	"response_wait": 0
+}
+	</textarea>
+	<div style="margin-top: 20px;">
+		<button id="button_send">送信</button>
+	</div>
+</div>
+<script type="text/javascript" src="like_client.js"></script>
+<script type="text/javascript">
+$(window).ready(function($){
+	var likeClient = new LikeClient;
+	if (!likeClient.isSupport()) {
+		alert("ご利用のブラウザは対応していません。\n"
+			+ "Androidの場合はChromeをご利用ください。");
+		return;
+	}
+
+	likeClient.actions.status = likeClient.actions.like = function(data) {
+		$("#button_send").removeAttr("disabled");
+	};
+	likeClient.open();
+	$("#button_send").on('click', function(e) {
+		likeClient.setConfig($("#button_pw").val(), $("#send_data").val());
+	});
+});
+</script>
+</body>
+</html>

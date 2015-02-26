@@ -1,0 +1,17 @@
+{
+  "name": "like_counter",
+  "version": "1.0.0",
+  "description": "Like counter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "~4.9.x",
+    "ws": "*",
+    "pg": "4.x"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}

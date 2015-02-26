@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>いいね！ カウンター</title>
+	<meta name="viewport" content="width=device-width">
+	<script src="/jquery-1.11.2.min.js"></script>
+	<script src="/jquery.cookie.js"></script>
+	<link href='//fonts.googleapis.com/css?family=Nixie+One' rel='stylesheet' type='text/css'>
+	<link href="/style.css?20150220" rel="stylesheet" type="text/css">
+	<style type="text/css">
+		html {
+			font-size: 32px;
+		}
+	</style>
+</head>
+<body>
+<div class="zoom_button_container" style="">
+	<div class="zoom_button" id="larger">+</div>
+	<div class="zoom_button" id="smaller">-</div>
+	<div class="clear"></div>
+</div>
+<div class="container table">
+	<div class="cell">
+		<div class="counter_title">みんなのいいね！</div>
+		<div class="counter_contents_container">
+			<div id="total_like" class="counter counter_contents">0</div>
+			<div id="total_like_trans" class="counter_trans_container"></div>
+			<div class="counter">&nbsp;</div>
+		</div>
+	</div>
+	<div class="cell">
+		<div class="counter_title">いいね！した人数</div>
+		<div class="counter_contents_container">
+			<div id="users_like" class="counter counter_contents">0</div>
+			<div id="users_like_trans" class="counter_trans_container"></div>
+			<div class="counter">&nbsp;</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="like_client.js"></script>
+<script type="text/javascript" src="view_manager.js?20150219"></script>
+<script type="text/javascript">
+$(window).ready(function($){
+	var likeClient = new LikeClient;
+	if (!likeClient.isSupport()) {
+		alert("ご利用のブラウザは対応していません。\n"
+			+ "Androidの場合はChromeをご利用ください。");
+		return;
+	}
+
+	var updated = 0;
+	var updateTotalLike = new NumberAnimatedEffect($('#total_like'), $('#total_like_trans'), 2000, 100);
+	var updateTotalUserLike = new NumberAnimatedEffect($('#users_like'), $('#users_like_trans'), 2000, 100);
+	likeClient.actions.status = likeClient.actions.total_update = function(data) {
+		updateTotalLike(data.total, 0);
+		updated = 1;
+	};
+	likeClient.actions.detail = function(data) {
+		updateTotalLike(data.total, 0);
+		updateTotalUserLike(data.users, 0);
+		updated = 0;
+	};
+	likeClient.actions.reset = function(data) {
+		updateTotalLike(0, 1);
+		updateTotalUserLike(0, 1);
+	};
+	likeClient.open();
+	setInterval(function() {
+		if (updated === 1) {
+			likeClient.detail();
+			updated = 0;
+		}
+	}, 100);
+
+	var currentFontSize = localStorage.hasOwnProperty("font_size") ? localStorage.getItem("font_size") - 0 : 32;
+	var applyFontSize = function() {
+		localStorage.setItem("font_size", currentFontSize);
+		$("html").css("fontSize", "" + currentFontSize + "px");
+	};
+	$("#larger").on("click", function() {
+		if (currentFontSize >= 256) {
+			return;
+		}
+		currentFontSize += 4;
+		applyFontSize();
+	});
+	$("#smaller").on("click", function() {
+		if (currentFontSize <= 4) {
+			return;
+		}
+		currentFontSize -= 4;
+		applyFontSize();
+	});
+	applyFontSize();
+});
+</script>
+</body>
+</html>
